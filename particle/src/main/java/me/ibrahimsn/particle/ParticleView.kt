@@ -16,13 +16,14 @@ class ParticleView : View {
 
     private var count = 20
     private var background = Color.RED
+    private var color = Color.WHITE
     private var minRadius = 5
     private var maxRadius = 10
 
     private val paint: Paint = Paint().apply {
         isAntiAlias = true
         style = Paint.Style.FILL_AND_STROKE
-        color = Color.WHITE
+        color = this.color
         strokeWidth = 2F
     }
 
@@ -34,6 +35,7 @@ class ParticleView : View {
         minRadius = a.getInt(R.styleable.ParticleView_minParticleRadius, minRadius)
         maxRadius = a.getInt(R.styleable.ParticleView_maxParticleRadius, maxRadius)
         background = a.getColor(R.styleable.ParticleView_backgroundColor, background)
+        color = a.getColor(R.styleable.ParticleView_particleColor, color)
 
         if (count > 50)
             count = 50

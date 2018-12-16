@@ -2,6 +2,7 @@
 <resources>
     <declare-styleable name="ParticleView">
         <attr name="backgroundColor" format="color" />
+        <attr name="particleColor" format="color" />
         <attr name="particleCount" format="integer" />
         <attr name="minParticleRadius" format="integer" />
         <attr name="maxParticleRadius" format="integer" />
