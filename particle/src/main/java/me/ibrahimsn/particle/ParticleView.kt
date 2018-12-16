@@ -23,7 +23,6 @@ class ParticleView : View {
     private val paint: Paint = Paint().apply {
         isAntiAlias = true
         style = Paint.Style.FILL_AND_STROKE
-        color = this.color
         strokeWidth = 2F
     }
 
@@ -36,6 +35,8 @@ class ParticleView : View {
         maxRadius = a.getInt(R.styleable.ParticleView_maxParticleRadius, maxRadius)
         background = a.getColor(R.styleable.ParticleView_backgroundColor, background)
         color = a.getColor(R.styleable.ParticleView_particleColor, color)
+
+        paint.color = color
 
         if (count > 50)
             count = 50
