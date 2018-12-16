@@ -9,32 +9,45 @@ import android.util.AttributeSet
 import android.view.View
 import android.view.ViewTreeObserver
 import kotlin.random.Random
-import android.support.v4.content.ContextCompat
-
 
 class ParticleView : View {
 
+    private lateinit var particles: Array<Particle>
+
     private var count = 20
     private var background = Color.RED
+    private var minRadius = 5
+    private var maxRadius = 10
 
-    private var paint: Paint = Paint()
-    private lateinit var particles: Array<Particle>
+    private val paint: Paint = Paint().apply {
+        isAntiAlias = true
+        style = Paint.Style.FILL_AND_STROKE
+        color = Color.WHITE
+        strokeWidth = 2F
+    }
 
     constructor(context: Context) : super(context)
     constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) {
         val a = context.obtainStyledAttributes(attrs, R.styleable.ParticleView, 0, 0)
-        count = a.getInt(R.styleable.ParticleView_particleCount, 15)
-        background = a.getColor(R.styleable.ParticleView_backgroundColor, ContextCompat.getColor(context, android.R.color.holo_red_light))
-        a.recycle()
 
+        count = a.getInt(R.styleable.ParticleView_particleCount, count)
+        minRadius = a.getInt(R.styleable.ParticleView_minParticleRadius, minRadius)
+        maxRadius = a.getInt(R.styleable.ParticleView_maxParticleRadius, maxRadius)
+        background = a.getColor(R.styleable.ParticleView_backgroundColor, background)
+
+        if (count > 50)
+            count = 50
+
+        if (minRadius <= 0)
+            minRadius = 1
+
+        if (maxRadius <= minRadius)
+            maxRadius = minRadius + 1
+
+        a.recycle()
     }
 
     init {
-        paint.isAntiAlias = true
-        paint.style = Paint.Style.FILL_AND_STROKE
-        paint.color = Color.WHITE
-        paint.strokeWidth = 2F
-
         viewTreeObserver.addOnPreDrawListener(object: ViewTreeObserver.OnPreDrawListener {
             override fun onPreDraw(): Boolean {
                 if (viewTreeObserver.isAlive)
@@ -44,7 +57,7 @@ class ParticleView : View {
 
                 for (i in 0 until count)
                     array[i] = Particle(
-                        Random.nextInt(5, 10).toFloat(),
+                        Random.nextInt(minRadius, maxRadius).toFloat(),
                         Random.nextInt(0, width).toFloat(),
                         Random.nextInt(0, height).toFloat(),
                         Random.nextInt(-2, 2),
@@ -83,7 +96,7 @@ class ParticleView : View {
             canvas.drawCircle(particles[i].x, particles[i].y, particles[i].radius, paint)
         }
 
-        postInvalidateDelayed(5)
+        postInvalidateDelayed(20)
         invalidate()
     }
 
