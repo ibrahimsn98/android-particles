@@ -1,0 +1,100 @@
+package me.ibrahimsn.particle
+
+import android.content.Context
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.Paint
+import android.graphics.Path
+import android.util.AttributeSet
+import android.view.View
+import android.view.ViewTreeObserver
+import kotlin.random.Random
+
+class ParticleView : View {
+
+    private val count = 20
+
+    private var paint: Paint = Paint()
+    private lateinit var particles: Array<Particle>
+
+    constructor(context: Context) : super(context)
+    constructor(context: Context, attrs: AttributeSet?) : super(context, attrs)
+
+    init {
+        paint.isAntiAlias = true
+        paint.style = Paint.Style.FILL_AND_STROKE
+        paint.color = Color.WHITE
+        paint.strokeWidth = 2F
+
+        viewTreeObserver.addOnPreDrawListener(object: ViewTreeObserver.OnPreDrawListener {
+            override fun onPreDraw(): Boolean {
+                if (viewTreeObserver.isAlive)
+                    viewTreeObserver.removeOnPreDrawListener(this)
+
+                val array = arrayOfNulls<Particle>(count)
+
+                for (i in 0 until count)
+                    array[i] = Particle(
+                        Random.nextInt(5, 10).toFloat(),
+                        Random.nextInt(0, width).toFloat(),
+                        Random.nextInt(0, height).toFloat(),
+                        Random.nextInt(-2, 2),
+                        Random.nextInt(-2, 2),
+                        Random.nextInt(150, 255))
+
+                particles =  array as Array<Particle>
+
+                return true
+            }
+        })
+    }
+
+    override fun onDraw(canvas: Canvas) {
+        canvas.drawColor(Color.RED)
+
+        for (i in 0 until count) {
+            paint.alpha = particles[i].alpha
+
+            particles[i].x += particles[i].vx
+            particles[i].y += particles[i].vy
+
+            if (particles[i].x < 0)
+                particles[i].x = width.toFloat()
+            else if (particles[i].x > width)
+                particles[i].x = 0F
+
+            if (particles[i].y < 0)
+                particles[i].y = height.toFloat()
+            else if (particles[i].y > height)
+                particles[i].y = 0F
+
+            for(j in 0 until count)
+                linkParticles(canvas, particles[i], particles[j])
+
+            canvas.drawCircle(particles[i].x, particles[i].y, particles[i].radius, paint)
+        }
+
+        postInvalidateDelayed(5)
+        invalidate()
+    }
+
+    private fun linkParticles(canvas: Canvas, p1: Particle, p2: Particle) {
+        val dx = p1.x - p2.x
+        val dy = p1.y - p2.y
+        val dist = Math.sqrt((dx * dx + dy * dy).toDouble()).toInt()
+
+        if (dist < 200) {
+            val path = Path()
+
+            path.moveTo(p1.x, p1.y)
+            path.lineTo(p2.x, p2.y)
+            path.close()
+
+            paint.alpha = 225 - dist
+            canvas.drawPath(path, paint)
+        }
+    }
+
+    data class Particle constructor(var radius: Float, var x: Float, var y: Float,
+                                    var vx: Int, var vy: Int, var alpha: Int)
+}
