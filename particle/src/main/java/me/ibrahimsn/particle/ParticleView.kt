@@ -9,16 +9,25 @@ import android.util.AttributeSet
 import android.view.View
 import android.view.ViewTreeObserver
 import kotlin.random.Random
+import android.support.v4.content.ContextCompat
+
 
 class ParticleView : View {
 
-    private val count = 20
+    private var count = 20
+    private var background = Color.RED
 
     private var paint: Paint = Paint()
     private lateinit var particles: Array<Particle>
 
     constructor(context: Context) : super(context)
-    constructor(context: Context, attrs: AttributeSet?) : super(context, attrs)
+    constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) {
+        val a = context.obtainStyledAttributes(attrs, R.styleable.ParticleView, 0, 0)
+        count = a.getInt(R.styleable.ParticleView_particleCount, 15)
+        background = a.getColor(R.styleable.ParticleView_backgroundColor, ContextCompat.getColor(context, android.R.color.holo_red_light))
+        a.recycle()
+
+    }
 
     init {
         paint.isAntiAlias = true
@@ -50,7 +59,7 @@ class ParticleView : View {
     }
 
     override fun onDraw(canvas: Canvas) {
-        canvas.drawColor(Color.RED)
+        canvas.drawColor(background)
 
         for (i in 0 until count) {
             paint.alpha = particles[i].alpha
