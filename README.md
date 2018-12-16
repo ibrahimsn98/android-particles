@@ -1,9 +1,9 @@
-# android-particles
+# Android Particles
 Particle animation library for Android
 
 
-# GIF
-<img src="https://github.com/ibrahimsn98/android-particles/blob/master/art/particle.gif"/>
+# Example
+<img width="300" src="https://github.com/ibrahimsn98/android-particles/blob/master/art/particle.gif"/>
 
 
 
