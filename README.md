@@ -16,7 +16,7 @@ allprojects {
     }
 }
 dependencies {
-      implementation 'com.github.ibrahimsn98:android-particles:1.2'
+      implementation 'com.github.ibrahimsn98:android-particles:1.3'
 }
 ```
 
@@ -36,4 +36,5 @@ dependencies {
 Thanks to [VincentGarreau](https://github.com/VincentGarreau) for sharing that awesome [javascript library](https://github.com/VincentGarreau/particles.js)
 
 # TODO
-- [ ] Performance optimizations
+- [x] Performance optimizations
+- [x] RAM optimizations
