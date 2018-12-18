@@ -15,10 +15,12 @@ class ParticleView : View {
     private lateinit var particles: Array<Particle>
 
     private var count = 20
-    private var background = Color.RED
-    private var color = Color.WHITE
     private var minRadius = 5
     private var maxRadius = 10
+
+    private var background = Color.RED
+    private var color = Color.WHITE
+    private val path = Path()
 
     private val paint: Paint = Paint().apply {
         isAntiAlias = true
@@ -78,8 +80,6 @@ class ParticleView : View {
         canvas.drawColor(background)
 
         for (i in 0 until count) {
-            paint.alpha = particles[i].alpha
-
             particles[i].x += particles[i].vx
             particles[i].y += particles[i].vy
 
@@ -96,11 +96,11 @@ class ParticleView : View {
             for(j in 0 until count)
                 linkParticles(canvas, particles[i], particles[j])
 
+            paint.alpha = particles[i].alpha
             canvas.drawCircle(particles[i].x, particles[i].y, particles[i].radius, paint)
         }
 
-        postInvalidateDelayed(20)
-        invalidate()
+        postInvalidateDelayed(25)
     }
 
     private fun linkParticles(canvas: Canvas, p1: Particle, p2: Particle) {
@@ -108,15 +108,14 @@ class ParticleView : View {
         val dy = p1.y - p2.y
         val dist = Math.sqrt((dx * dx + dy * dy).toDouble()).toInt()
 
-        if (dist < 200) {
-            val path = Path()
-
+        if (dist < 225) {
             path.moveTo(p1.x, p1.y)
             path.lineTo(p2.x, p2.y)
-            path.close()
 
-            paint.alpha = 225 - dist
+            paint.alpha = 250 - dist
             canvas.drawPath(path, paint)
+
+            path.reset()
         }
     }
 
