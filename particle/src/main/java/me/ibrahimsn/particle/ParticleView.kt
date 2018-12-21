@@ -18,7 +18,6 @@ class ParticleView : View {
     private var minRadius = 5
     private var maxRadius = 10
 
-    private var background = Color.RED
     private var color = Color.WHITE
     private val path = Path()
 
@@ -35,7 +34,6 @@ class ParticleView : View {
         count = a.getInt(R.styleable.ParticleView_particleCount, count)
         minRadius = a.getInt(R.styleable.ParticleView_minParticleRadius, minRadius)
         maxRadius = a.getInt(R.styleable.ParticleView_maxParticleRadius, maxRadius)
-        background = a.getColor(R.styleable.ParticleView_backgroundColor, background)
         color = a.getColor(R.styleable.ParticleView_particleColor, color)
 
         paint.color = color
@@ -77,8 +75,6 @@ class ParticleView : View {
     }
 
     override fun onDraw(canvas: Canvas) {
-        canvas.drawColor(background)
-
         for (i in 0 until count) {
             particles[i].x += particles[i].vx
             particles[i].y += particles[i].vy

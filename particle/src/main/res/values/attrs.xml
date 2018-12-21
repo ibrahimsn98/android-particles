@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <declare-styleable name="ParticleView">
-        <attr name="backgroundColor" format="color" />
         <attr name="particleColor" format="color" />
         <attr name="particleCount" format="integer" />
         <attr name="minParticleRadius" format="integer" />
