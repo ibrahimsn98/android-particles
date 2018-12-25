@@ -17,7 +17,7 @@ allprojects {
     }
 }
 dependencies {
-      implementation 'com.github.ibrahimsn98:android-particles:1.4'
+      implementation 'com.github.ibrahimsn98:android-particles:1.5'
 }
 ```
 
@@ -65,4 +65,4 @@ Thanks to [VincentGarreau](https://github.com/VincentGarreau) for sharing that a
 # TODO
 - [x] Performance optimizations
 - [x] RAM optimizations
-- [] Touch Event Animations
+- [ ] Touch Event Animations
