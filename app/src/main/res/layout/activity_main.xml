@@ -12,7 +12,7 @@
             android:id="@+id/particleView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:particleCount="25"
+            app:particleCount="55"
             app:particleColor="@android:color/white"
             app:backgroundColor="@android:color/holo_red_light"
             app:minParticleRadius="3"
