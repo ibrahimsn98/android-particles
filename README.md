@@ -7,7 +7,6 @@ Particle animation library for Android
 <img width="250" src="https://github.com/ibrahimsn98/android-particles/blob/master/art/particle2.gif"/>
 
 
-
 # Setup
 ```gradle
 allprojects {
@@ -66,3 +65,8 @@ Thanks to [VincentGarreau](https://github.com/VincentGarreau) for sharing that a
 - [x] Performance optimizations
 - [x] RAM optimizations
 - [ ] Touch Event Animations
+
+# License
+MIT
+
+> Follow me on Twitter [@ibrahimsn98](https://twitter.com/ibrahimsn98)
