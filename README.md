@@ -4,7 +4,7 @@ Particle animation library for Android
 [![](https://jitpack.io/v/ibrahimsn98/android-particles.svg)](https://jitpack.io/#ibrahimsn98/android-particles)
 
 # Example
-<img width="250" src="https://github.com/ibrahimsn98/android-particles/blob/master/art/particle.gif"/>
+<img width="250" src="https://github.com/ibrahimsn98/android-particles/blob/master/art/particle2.gif"/>
 
 
 
@@ -17,7 +17,7 @@ allprojects {
     }
 }
 dependencies {
-      implementation 'com.github.ibrahimsn98:android-particles:1.5'
+      implementation 'com.github.ibrahimsn98:android-particles:1.6'
 }
 ```
 
