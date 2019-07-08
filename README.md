@@ -16,7 +16,7 @@ allprojects {
     }
 }
 dependencies {
-      implementation 'com.github.ibrahimsn98:android-particles:1.6'
+      implementation 'com.github.ibrahimsn98:android-particles:1.7'
 }
 ```
 
