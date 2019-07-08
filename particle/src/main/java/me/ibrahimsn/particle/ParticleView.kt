@@ -6,6 +6,7 @@ import android.util.AttributeSet
 import android.view.SurfaceHolder
 import android.view.SurfaceView
 import android.view.ViewTreeObserver
+import kotlin.math.sqrt
 import kotlin.random.Random
 
 class ParticleView : SurfaceView, SurfaceHolder.Callback {
@@ -17,6 +18,7 @@ class ParticleView : SurfaceView, SurfaceHolder.Callback {
     private var count = 20
     private var minRadius = 5
     private var maxRadius = 10
+    private var lines = true
     private var hasSurface: Boolean = false
 
     private var background = Color.BLACK
@@ -33,6 +35,7 @@ class ParticleView : SurfaceView, SurfaceHolder.Callback {
     constructor(context: Context, attrs: AttributeSet) : super(context, attrs) {
         val a = context.obtainStyledAttributes(attrs, R.styleable.ParticleView, 0, 0)
 
+        lines = a.getBoolean(R.styleable.ParticleView_lines, lines)
         count = a.getInt(R.styleable.ParticleView_particleCount, count)
         minRadius = a.getInt(R.styleable.ParticleView_minParticleRadius, minRadius)
         maxRadius = a.getInt(R.styleable.ParticleView_maxParticleRadius, maxRadius)
@@ -141,8 +144,9 @@ class ParticleView : SurfaceView, SurfaceHolder.Callback {
                             else if (particles[i]!!.y > height)
                                 particles[i]!!.y = 0F
 
-                            for (j in 0 until count)
-                                linkParticles(canvas, particles[i]!!, particles[j]!!)
+                            if (lines)
+                                for (j in 0 until count)
+                                    linkParticles(canvas, particles[i]!!, particles[j]!!)
 
                             paint.alpha = particles[i]!!.alpha
                             canvas.drawCircle(particles[i]!!.x, particles[i]!!.y, particles[i]!!.radius, paint)
@@ -173,7 +177,7 @@ class ParticleView : SurfaceView, SurfaceHolder.Callback {
     private fun linkParticles(canvas: Canvas, p1: Particle, p2: Particle) {
         val dx = p1.x - p2.x
         val dy = p1.y - p2.y
-        val dist = Math.sqrt((dx * dx + dy * dy).toDouble()).toInt()
+        val dist = sqrt((dx * dx + dy * dy).toDouble()).toInt()
 
         if (dist < 225) {
             path.moveTo(p1.x, p1.y)
