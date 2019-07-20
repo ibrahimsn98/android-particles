@@ -5,14 +5,12 @@ import android.graphics.*
 import android.util.AttributeSet
 import android.view.SurfaceHolder
 import android.view.SurfaceView
-import android.view.ViewTreeObserver
 import kotlin.math.sqrt
 import kotlin.random.Random
 
 class ParticleView : SurfaceView, SurfaceHolder.Callback {
 
-    private lateinit var particles: Array<Particle?>
-
+    private val particles = mutableListOf<Particle>()
     private var surfaceViewThread: SurfaceViewThread? = null
 
     private var count = 20
@@ -43,7 +41,6 @@ class ParticleView : SurfaceView, SurfaceHolder.Callback {
         background = a.getColor(R.styleable.ParticleView_backgroundColor, background)
         a.recycle()
 
-        particles = arrayOfNulls(count)
         paint.color = color
 
         if (count > 50) count = 50
@@ -94,30 +91,24 @@ class ParticleView : SurfaceView, SurfaceHolder.Callback {
 
     }
 
+    override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
+        super.onSizeChanged(w, h, oldw, oldh)
+        if (particles.size == 0)
+            for (i in 0 until count)
+                particles.add(Particle(Random.nextInt(minRadius, maxRadius).toFloat(),
+                    Random.nextInt(0, width).toFloat(),
+                    Random.nextInt(0, height).toFloat(),
+                    Random.nextInt(-2, 2),
+                    Random.nextInt(-2, 2),
+                    Random.nextInt(150, 255)))
+    }
+
     private inner class SurfaceViewThread : Thread() {
 
         private var running: Boolean = true
 
         init {
             running = true
-
-            viewTreeObserver.addOnPreDrawListener(object: ViewTreeObserver.OnPreDrawListener {
-                override fun onPreDraw(): Boolean {
-                    if (viewTreeObserver.isAlive)
-                        viewTreeObserver.removeOnPreDrawListener(this)
-
-                    for (i in 0 until count)
-                        particles[i] = Particle(
-                            Random.nextInt(minRadius, maxRadius).toFloat(),
-                            Random.nextInt(0, width).toFloat(),
-                            Random.nextInt(0, height).toFloat(),
-                            Random.nextInt(-2, 2),
-                            Random.nextInt(-2, 2),
-                            Random.nextInt(150, 255))
-
-                    return true
-                }
-            })
         }
 
         override fun run() {
@@ -131,25 +122,25 @@ class ParticleView : SurfaceView, SurfaceHolder.Callback {
                         canvas.drawColor(background)
 
                         for (i in 0 until count) {
-                            particles[i]!!.x += particles[i]!!.vx
-                            particles[i]!!.y += particles[i]!!.vy
+                            particles[i].x += particles[i].vx
+                            particles[i].y += particles[i].vy
 
-                            if (particles[i]!!.x < 0)
-                                particles[i]!!.x = width.toFloat()
-                            else if (particles[i]!!.x > width)
-                                particles[i]!!.x = 0F
+                            if (particles[i].x < 0)
+                                particles[i].x = width.toFloat()
+                            else if (particles[i].x > width)
+                                particles[i].x = 0F
 
-                            if (particles[i]!!.y < 0)
-                                particles[i]!!.y = height.toFloat()
-                            else if (particles[i]!!.y > height)
-                                particles[i]!!.y = 0F
+                            if (particles[i].y < 0)
+                                particles[i].y = height.toFloat()
+                            else if (particles[i].y > height)
+                                particles[i].y = 0F
 
                             if (lines)
                                 for (j in 0 until count)
-                                    linkParticles(canvas, particles[i]!!, particles[j]!!)
+                                    linkParticles(canvas, particles[i], particles[j])
 
-                            paint.alpha = particles[i]!!.alpha
-                            canvas.drawCircle(particles[i]!!.x, particles[i]!!.y, particles[i]!!.radius, paint)
+                            paint.alpha = particles[i].alpha
+                            canvas.drawCircle(particles[i].x, particles[i].y, particles[i].radius, paint)
                         }
                     }
 

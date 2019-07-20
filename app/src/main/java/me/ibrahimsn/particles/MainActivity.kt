@@ -1,7 +1,7 @@
 package me.ibrahimsn.particles
 
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import me.ibrahimsn.particle.ParticleView
 
 class MainActivity : AppCompatActivity() {
