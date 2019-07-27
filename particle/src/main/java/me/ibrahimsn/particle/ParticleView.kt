@@ -20,10 +20,17 @@ class ParticleView : SurfaceView, SurfaceHolder.Callback {
     private var hasSurface: Boolean = false
 
     private var background = Color.BLACK
-    private var color = Color.WHITE
+    private var colorParticles = Color.WHITE
+    private var colorLines = Color.WHITE
     private val path = Path()
 
-    private val paint: Paint = Paint().apply {
+    private val paintParticles: Paint = Paint().apply {
+        isAntiAlias = true
+        style = Paint.Style.FILL_AND_STROKE
+        strokeWidth = 2F
+    }
+
+    private val paintLines: Paint = Paint().apply {
         isAntiAlias = true
         style = Paint.Style.FILL_AND_STROKE
         strokeWidth = 2F
@@ -37,11 +44,13 @@ class ParticleView : SurfaceView, SurfaceHolder.Callback {
         count = a.getInt(R.styleable.ParticleView_particleCount, count)
         minRadius = a.getInt(R.styleable.ParticleView_minParticleRadius, minRadius)
         maxRadius = a.getInt(R.styleable.ParticleView_maxParticleRadius, maxRadius)
-        color = a.getColor(R.styleable.ParticleView_particleColor, color)
+        colorParticles = a.getColor(R.styleable.ParticleView_particleColor, colorParticles)
+        colorLines = a.getColor(R.styleable.ParticleView_linesColor, colorLines)
         background = a.getColor(R.styleable.ParticleView_backgroundColor, background)
         a.recycle()
 
-        paint.color = color
+        paintParticles.color = colorParticles
+        paintLines.color = colorLines
 
         if (count > 50) count = 50
         if (minRadius <= 0) minRadius = 1
@@ -139,8 +148,8 @@ class ParticleView : SurfaceView, SurfaceHolder.Callback {
                                 for (j in 0 until count)
                                     linkParticles(canvas, particles[i], particles[j])
 
-                            paint.alpha = particles[i].alpha
-                            canvas.drawCircle(particles[i].x, particles[i].y, particles[i].radius, paint)
+                            paintParticles.alpha = particles[i].alpha
+                            canvas.drawCircle(particles[i].x, particles[i].y, particles[i].radius, paintParticles)
                         }
                     }
 
@@ -174,8 +183,8 @@ class ParticleView : SurfaceView, SurfaceHolder.Callback {
             path.moveTo(p1.x, p1.y)
             path.lineTo(p2.x, p2.y)
 
-            paint.alpha = 250 - dist
-            canvas.drawPath(path, paint)
+            paintLines.alpha = 250 - dist
+            canvas.drawPath(path, paintLines)
 
             path.reset()
         }
