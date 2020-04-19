@@ -17,11 +17,12 @@ class ParticleView : SurfaceView, SurfaceHolder.Callback {
     private val particles = mutableListOf<Particle>()
     private var surfaceViewThread: SurfaceViewThread? = null
 
-    private var count = 20
+    private var particleCount = 20
     private var minRadius = 5
     private var maxRadius = 10
     private var isLinesEnabled = true
     private var hasSurface: Boolean = false
+    private var hasSetup = false
 
     private var background = Color.BLACK
     private var colorParticles = Color.WHITE
@@ -45,7 +46,7 @@ class ParticleView : SurfaceView, SurfaceHolder.Callback {
         val a = context.obtainStyledAttributes(attrs, R.styleable.ParticleView, 0, 0)
 
         isLinesEnabled = a.getBoolean(R.styleable.ParticleView_lines, isLinesEnabled)
-        count = a.getInt(R.styleable.ParticleView_particleCount, count)
+        particleCount = a.getInt(R.styleable.ParticleView_particleCount, particleCount)
         minRadius = a.getInt(R.styleable.ParticleView_minParticleRadius, minRadius)
         maxRadius = a.getInt(R.styleable.ParticleView_maxParticleRadius, maxRadius)
         colorParticles = a.getColor(R.styleable.ParticleView_particleColor, colorParticles)
@@ -56,7 +57,7 @@ class ParticleView : SurfaceView, SurfaceHolder.Callback {
         paintParticles.color = colorParticles
         paintLines.color = colorLines
 
-        if (count > 50) count = 50
+        if (particleCount > 50) particleCount = 50
         if (minRadius <= 0) minRadius = 1
         if (maxRadius <= minRadius) maxRadius = minRadius + 1
 
@@ -94,33 +95,12 @@ class ParticleView : SurfaceView, SurfaceHolder.Callback {
 
     override fun surfaceDestroyed(holder: SurfaceHolder) {
         hasSurface = false
-
-        if (surfaceViewThread != null) {
-            surfaceViewThread!!.requestExitAndWait()
-            surfaceViewThread = null
-        }
+        surfaceViewThread?.requestExitAndWait()
+        surfaceViewThread = null
     }
 
     override fun surfaceChanged(holder: SurfaceHolder, format: Int, w: Int, h: Int) {
         // Ignore
-    }
-
-    override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
-        super.onSizeChanged(w, h, oldw, oldh)
-        if (particles.size == 0) {
-            for (i in 0 until count) {
-                particles.add(
-                    Particle(
-                        Random.nextInt(minRadius, maxRadius).toFloat(),
-                        Random.nextInt(0, width).toFloat(),
-                        Random.nextInt(0, height).toFloat(),
-                        Random.nextInt(-2, 2),
-                        Random.nextInt(-2, 2),
-                        Random.nextInt(150, 255)
-                    )
-                )
-            }
-        }
     }
 
     private inner class SurfaceViewThread : Thread() {
@@ -129,6 +109,22 @@ class ParticleView : SurfaceView, SurfaceHolder.Callback {
         private var canvas: Canvas? = null
 
         override fun run() {
+            if (!hasSetup) {
+                hasSetup = true
+                for (i in 0 until particleCount) {
+                    particles.add(
+                        Particle(
+                            Random.nextInt(minRadius, maxRadius).toFloat(),
+                            Random.nextInt(0, width).toFloat(),
+                            Random.nextInt(0, height).toFloat(),
+                            Random.nextInt(-2, 2),
+                            Random.nextInt(-2, 2),
+                            Random.nextInt(150, 255)
+                        )
+                    )
+                }
+            }
+
             while (running) {
                 try {
                     canvas = holder.lockCanvas()
@@ -136,7 +132,7 @@ class ParticleView : SurfaceView, SurfaceHolder.Callback {
                     synchronized (holder) {
                         canvas?.drawColor(background)
 
-                        for (i in 0 until count) {
+                        for (i in 0 until particleCount) {
                             particles[i].x += particles[i].vx
                             particles[i].y += particles[i].vy
 
@@ -154,7 +150,7 @@ class ParticleView : SurfaceView, SurfaceHolder.Callback {
 
                             canvas?.let {
                                 if (isLinesEnabled) {
-                                    for (j in 0 until count) {
+                                    for (j in 0 until particleCount) {
                                         if (i != j) {
                                             linkParticles(it, particles[i], particles[j])
                                         }
