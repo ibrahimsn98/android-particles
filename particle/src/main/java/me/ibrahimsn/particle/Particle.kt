@@ -1,6 +1,6 @@
 package me.ibrahimsn.particle
 
-data class Particle constructor(
+data class Particle (
     var radius: Float,
     var x: Float,
     var y: Float,

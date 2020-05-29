@@ -1,34 +1,106 @@
 package me.ibrahimsn.particle
 
 import android.content.Context
-import android.graphics.Canvas
-import android.graphics.Color
-import android.graphics.Paint
-import android.graphics.Path
+import android.graphics.*
 import android.util.AttributeSet
 import android.view.SurfaceHolder
 import android.view.SurfaceView
+import androidx.annotation.ColorInt
+import androidx.annotation.Dimension
 import kotlin.math.min
 import kotlin.math.sqrt
 import kotlin.random.Random
 
-class ParticleView : SurfaceView, SurfaceHolder.Callback {
+class ParticleView @JvmOverloads constructor(
+    context: Context,
+    attrs: AttributeSet,
+    defStyleAttr: Int = R.attr.ParticleViewStyle
+) : SurfaceView(context, attrs, defStyleAttr), SurfaceHolder.Callback {
 
     private val particles = mutableListOf<Particle>()
     private var surfaceViewThread: SurfaceViewThread? = null
-
-    private var particleCount = 20
-    private var minRadius = 5
-    private var maxRadius = 10
-    private var isLinesEnabled = true
     private var hasSurface: Boolean = false
     private var hasSetup = false
 
-    private var background = Color.BLACK
-    private var colorParticles = Color.WHITE
-    private var colorLines = Color.WHITE
     private val path = Path()
 
+    // Attribute Defaults
+    private var _particleCount = 20
+
+    @Dimension
+    private var _particleMinRadius = 5
+
+    @Dimension
+    private var _particleMaxRadius = 10
+
+    @ColorInt
+    private var _particlesBackgroundColor = Color.BLACK
+
+    @ColorInt
+    private var _particleColor = Color.WHITE
+
+    @ColorInt
+    private var _particleLineColor = Color.WHITE
+
+    private var _particleLinesEnabled = true
+
+    // Core Attributes
+    var particleCount: Int
+        get() = _particleCount
+        set(value) {
+            _particleCount = when {
+                value > 50 -> 50
+                value < 0 -> 0
+                else -> value
+            }
+        }
+
+    var particleMinRadius: Int
+        @Dimension get() = _particleMinRadius
+        set(@Dimension value) {
+            _particleMinRadius = when {
+                value <= 0 -> 1
+                value >= particleMaxRadius -> 1
+                else -> value
+            }
+        }
+
+    var particleMaxRadius: Int
+        @Dimension get() = _particleMaxRadius
+        set(@Dimension value) {
+            _particleMaxRadius = when {
+                value <= particleMinRadius -> particleMinRadius + 1
+                else -> value
+            }
+        }
+
+    var particlesBackgroundColor: Int
+        @ColorInt get() = _particlesBackgroundColor
+        set(@ColorInt value) {
+            _particlesBackgroundColor = value
+        }
+
+    var particleColor: Int
+        @ColorInt get() = _particleColor
+        set(@ColorInt value) {
+            _particleColor = value
+            paintParticles.color = value
+        }
+
+    var particleLineColor: Int
+        @ColorInt get() = _particleLineColor
+        set(@ColorInt value) {
+            _particleLineColor = value
+            paintLines.color = value
+        }
+
+    var particleLinesEnabled: Boolean
+        get() = _particleLinesEnabled
+        set(value) {
+            _particleLinesEnabled = value
+        }
+
+    // Paints
     private val paintParticles: Paint = Paint().apply {
         isAntiAlias = true
         style = Paint.Style.FILL
@@ -37,35 +109,64 @@ class ParticleView : SurfaceView, SurfaceHolder.Callback {
 
     private val paintLines: Paint = Paint().apply {
         isAntiAlias = true
-        style = Paint.Style.STROKE
+        style = Paint.Style.FILL_AND_STROKE
         strokeWidth = 2F
     }
 
-    constructor(context: Context) : super(context)
-    constructor(context: Context, attrs: AttributeSet) : super(context, attrs) {
-        val a = context.obtainStyledAttributes(attrs, R.styleable.ParticleView, 0, 0)
-
-        isLinesEnabled = a.getBoolean(R.styleable.ParticleView_lines, isLinesEnabled)
-        particleCount = a.getInt(R.styleable.ParticleView_particleCount, particleCount)
-        minRadius = a.getInt(R.styleable.ParticleView_minParticleRadius, minRadius)
-        maxRadius = a.getInt(R.styleable.ParticleView_maxParticleRadius, maxRadius)
-        colorParticles = a.getColor(R.styleable.ParticleView_particleColor, colorParticles)
-        colorLines = a.getColor(R.styleable.ParticleView_linesColor, colorLines)
-        background = a.getColor(R.styleable.ParticleView_backgroundColor, background)
-        a.recycle()
-
-        paintParticles.color = colorParticles
-        paintLines.color = colorLines
-
-        if (particleCount > 50) particleCount = 50
-        if (minRadius <= 0) minRadius = 1
-        if (maxRadius <= minRadius) maxRadius = minRadius + 1
-
-        if (holder != null) {
-            holder.addCallback(this)
-        }
-
+    init {
+        obtainStyledAttributes(attrs, defStyleAttr)
+        if (holder != null) holder.addCallback(this)
         hasSurface = false
+    }
+
+    private fun obtainStyledAttributes(attrs: AttributeSet, defStyleAttr: Int) {
+        val typedArray = context.obtainStyledAttributes(
+            attrs,
+            R.styleable.ParticleView,
+            defStyleAttr,
+            0
+        )
+
+        try {
+            particleCount = typedArray.getInt(
+                R.styleable.ParticleView_particleCount,
+                particleCount
+            )
+
+            particleMinRadius = typedArray.getInt(
+                R.styleable.ParticleView_particleMinRadius,
+                particleMinRadius
+            )
+
+            particleMaxRadius = typedArray.getInt(
+                R.styleable.ParticleView_particleMaxRadius,
+                particleMaxRadius
+            )
+
+            particlesBackgroundColor = typedArray.getColor(
+                R.styleable.ParticleView_particlesBackgroundColor,
+                particlesBackgroundColor
+            )
+
+            particleColor = typedArray.getColor(
+                R.styleable.ParticleView_particleColor,
+                particleColor
+            )
+
+            particleLineColor = typedArray.getColor(
+                R.styleable.ParticleView_particleLineColor,
+                particleLineColor
+            )
+
+            particleLinesEnabled = typedArray.getBoolean(
+                R.styleable.ParticleView_particleLinesEnabled,
+                particleLinesEnabled
+            )
+        } catch (e: Exception) {
+            e.printStackTrace()
+        } finally {
+            typedArray.recycle()
+        }
     }
 
     override fun surfaceCreated(holder: SurfaceHolder) {
@@ -100,7 +201,26 @@ class ParticleView : SurfaceView, SurfaceHolder.Callback {
     }
 
     override fun surfaceChanged(holder: SurfaceHolder, format: Int, w: Int, h: Int) {
-        // Ignore
+        // ignored
+    }
+
+    private fun setupParticles() {
+        if (!hasSetup) {
+            hasSetup = true
+            particles.clear()
+            for (i in 0 until particleCount) {
+                particles.add(
+                    Particle(
+                        Random.nextInt(particleMinRadius, particleMaxRadius).toFloat(),
+                        Random.nextInt(0, width).toFloat(),
+                        Random.nextInt(0, height).toFloat(),
+                        Random.nextInt(-2, 2),
+                        Random.nextInt(-2, 2),
+                        Random.nextInt(150, 255)
+                    )
+                )
+            }
+        }
     }
 
     private inner class SurfaceViewThread : Thread() {
@@ -109,28 +229,15 @@ class ParticleView : SurfaceView, SurfaceHolder.Callback {
         private var canvas: Canvas? = null
 
         override fun run() {
-            if (!hasSetup) {
-                hasSetup = true
-                for (i in 0 until particleCount) {
-                    particles.add(
-                        Particle(
-                            Random.nextInt(minRadius, maxRadius).toFloat(),
-                            Random.nextInt(0, width).toFloat(),
-                            Random.nextInt(0, height).toFloat(),
-                            Random.nextInt(-2, 2),
-                            Random.nextInt(-2, 2),
-                            Random.nextInt(150, 255)
-                        )
-                    )
-                }
-            }
+            setupParticles()
 
             while (running) {
                 try {
                     canvas = holder.lockCanvas()
 
                     synchronized (holder) {
-                        canvas?.drawColor(background)
+                        // Clear screen every frame
+                        canvas?.drawColor(particlesBackgroundColor, PorterDuff.Mode.CLEAR)
 
                         for (i in 0 until particleCount) {
                             particles[i].x += particles[i].vx
@@ -149,7 +256,7 @@ class ParticleView : SurfaceView, SurfaceHolder.Callback {
                             }
 
                             canvas?.let {
-                                if (isLinesEnabled) {
+                                if (particleLinesEnabled) {
                                     for (j in 0 until particleCount) {
                                         if (i != j) {
                                             linkParticles(it, particles[i], particles[j])
@@ -178,8 +285,8 @@ class ParticleView : SurfaceView, SurfaceHolder.Callback {
 
             try {
                 join()
-            } catch (ignored: InterruptedException) {
-
+            } catch (e: InterruptedException) {
+                // ignored
             }
         }
     }

@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <declare-styleable name="ParticleView">
-        <attr name="lines" format="boolean" />
-        <attr name="backgroundColor" format="color" />
-        <attr name="particleColor" format="color" />
-        <attr name="linesColor" format="color" />
         <attr name="particleCount" format="integer" />
-        <attr name="minParticleRadius" format="integer" />
-        <attr name="maxParticleRadius" format="integer" />
+        <attr name="particleMinRadius" format="integer" />
+        <attr name="particleMaxRadius" format="integer" />
+        <attr name="particlesBackgroundColor" format="color" />
+        <attr name="particleColor" format="color" />
+        <attr name="particleLineColor" format="color" />
+        <attr name="particleLinesEnabled" format="boolean" />
     </declare-styleable>
+
+    <attr name="ParticleViewStyle" format="reference" />
 </resources>

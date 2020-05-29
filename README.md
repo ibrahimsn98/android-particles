@@ -16,21 +16,23 @@ allprojects {
     }
 }
 dependencies {
-      implementation 'com.github.ibrahimsn98:android-particles:1.8'
+      implementation 'com.github.ibrahimsn98:android-particles:1.9'
 }
 ```
 
 # Attributions
 ```xml
 <me.ibrahimsn.particle.ParticleView
-        android:id="@+id/particleView"                        
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:particleCount="20"
-        app:minParticleRadius="5"
-        app:maxParticleRadius="12"
-        app:particleColor="@android:color/white"
-        app:backgroundColor="@android:color/holo_red_light" />
+    android:id="@+id/particleView"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:particleCount="60"
+    app:particleMinRadius="3"
+    app:particleMaxRadius="10"
+    app:particlesBackgroundColor="#23262a"
+    app:particleColor="@android:color/holo_green_dark"
+    app:particleLineColor="@android:color/holo_green_dark"
+    app:particleLinesEnabled="true" />
 ```
 
 # Usage

@@ -13,10 +13,11 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:particleCount="60"
-        app:linesColor="@android:color/holo_green_dark"
+        app:particleMinRadius="3"
+        app:particleMaxRadius="10"
+        app:particlesBackgroundColor="#23262a"
         app:particleColor="@android:color/holo_green_dark"
-        app:backgroundColor="#23262a"
-        app:minParticleRadius="3"
-        app:maxParticleRadius="10"/>
+        app:particleLineColor="@android:color/holo_green_dark"
+        app:particleLinesEnabled="true" />
 
 </FrameLayout>
