@@ -237,7 +237,7 @@ class ParticleView @JvmOverloads constructor(
 
                     synchronized (holder) {
                         // Clear screen every frame
-                        canvas?.drawColor(particlesBackgroundColor, PorterDuff.Mode.CLEAR)
+                        canvas?.drawColor(particlesBackgroundColor, PorterDuff.Mode.SRC)
 
                         for (i in 0 until particleCount) {
                             particles[i].x += particles[i].vx
