@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <declare-styleable name="ParticleView">
+        <attr name="particlesSpeed" format="enum">
+            <enum name="Slow" value="1"/>
+            <enum name="Default" value="0"/>
+        </attr>
+        <!--<attr name="particlesSpeed" format="integer"/-->>
         <attr name="particleCount" format="integer" />
         <attr name="particleMinRadius" format="integer" />
         <attr name="particleMaxRadius" format="integer" />

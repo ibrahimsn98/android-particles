@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="@android:color/black"
+    android:background="@android:color/white"
     tools:context=".MainActivity">
 
     <me.ibrahimsn.particle.ParticleView
@@ -15,9 +15,10 @@
         app:particleCount="60"
         app:particleMinRadius="3"
         app:particleMaxRadius="10"
-        app:particlesBackgroundColor="#23262a"
+        app:particlesSpeed="Slow"
+        app:particlesBackgroundColor="@android:color/white"
         app:particleColor="@android:color/holo_green_dark"
         app:particleLineColor="@android:color/holo_green_dark"
-        app:particleLinesEnabled="true" />
+        app:particleLinesEnabled="false" />
 
 </FrameLayout>
