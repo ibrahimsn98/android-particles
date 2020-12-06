@@ -1,8 +1,10 @@
 package me.ibrahimsn.particle
 
 import android.content.Context
+import android.content.res.TypedArray
 import android.graphics.*
 import android.util.AttributeSet
+import android.util.Log
 import android.view.SurfaceHolder
 import android.view.SurfaceView
 import androidx.annotation.ColorInt
@@ -11,10 +13,11 @@ import kotlin.math.min
 import kotlin.math.sqrt
 import kotlin.random.Random
 
+
 class ParticleView @JvmOverloads constructor(
-    context: Context,
-    attrs: AttributeSet,
-    defStyleAttr: Int = R.attr.ParticleViewStyle
+        context: Context,
+        attrs: AttributeSet,
+        defStyleAttr: Int = R.attr.ParticleViewStyle
 ) : SurfaceView(context, attrs, defStyleAttr), SurfaceHolder.Callback {
 
     private val particles = mutableListOf<Particle>()
@@ -34,7 +37,7 @@ class ParticleView @JvmOverloads constructor(
     private var _particleMaxRadius = 10
 
     @ColorInt
-    private var _particlesBackgroundColor = Color.BLACK
+    private var _particlesBackgroundColor = Color.TRANSPARENT
 
     @ColorInt
     private var _particleColor = Color.WHITE
@@ -43,6 +46,8 @@ class ParticleView @JvmOverloads constructor(
     private var _particleLineColor = Color.WHITE
 
     private var _particleLinesEnabled = true
+
+    private var _particlesSpeed = ParticlesSpeed.Default
 
     // Core Attributes
     var particleCount: Int
@@ -100,6 +105,12 @@ class ParticleView @JvmOverloads constructor(
             _particleLinesEnabled = value
         }
 
+    var particleSpeed: ParticlesSpeed
+        get() = _particlesSpeed
+        set(value) {
+            _particlesSpeed = value
+        }
+
     // Paints
     private val paintParticles: Paint = Paint().apply {
         isAntiAlias = true
@@ -121,47 +132,50 @@ class ParticleView @JvmOverloads constructor(
 
     private fun obtainStyledAttributes(attrs: AttributeSet, defStyleAttr: Int) {
         val typedArray = context.obtainStyledAttributes(
-            attrs,
-            R.styleable.ParticleView,
-            defStyleAttr,
-            0
+                attrs,
+                R.styleable.ParticleView,
+                defStyleAttr,
+                0
         )
 
         try {
             particleCount = typedArray.getInt(
-                R.styleable.ParticleView_particleCount,
-                particleCount
+                    R.styleable.ParticleView_particleCount,
+                    particleCount
             )
 
             particleMinRadius = typedArray.getInt(
-                R.styleable.ParticleView_particleMinRadius,
-                particleMinRadius
+                    R.styleable.ParticleView_particleMinRadius,
+                    particleMinRadius
             )
 
             particleMaxRadius = typedArray.getInt(
-                R.styleable.ParticleView_particleMaxRadius,
-                particleMaxRadius
+                    R.styleable.ParticleView_particleMaxRadius,
+                    particleMaxRadius
             )
 
             particlesBackgroundColor = typedArray.getColor(
-                R.styleable.ParticleView_particlesBackgroundColor,
-                particlesBackgroundColor
+                    R.styleable.ParticleView_particlesBackgroundColor,
+                    particlesBackgroundColor
             )
 
             particleColor = typedArray.getColor(
-                R.styleable.ParticleView_particleColor,
-                particleColor
+                    R.styleable.ParticleView_particleColor,
+                    particleColor
             )
 
             particleLineColor = typedArray.getColor(
-                R.styleable.ParticleView_particleLineColor,
-                particleLineColor
+                    R.styleable.ParticleView_particleLineColor,
+                    particleLineColor
             )
 
             particleLinesEnabled = typedArray.getBoolean(
-                R.styleable.ParticleView_particleLinesEnabled,
-                particleLinesEnabled
+                    R.styleable.ParticleView_particleLinesEnabled,
+                    particleLinesEnabled
             )
+
+            particleSpeed =  typedArray.getEnum(R.styleable.ParticleView_particlesSpeed, ParticlesSpeed.Default)
+
         } catch (e: Exception) {
             e.printStackTrace()
         } finally {
@@ -210,14 +224,14 @@ class ParticleView @JvmOverloads constructor(
             particles.clear()
             for (i in 0 until particleCount) {
                 particles.add(
-                    Particle(
-                        Random.nextInt(particleMinRadius, particleMaxRadius).toFloat(),
-                        Random.nextInt(0, width).toFloat(),
-                        Random.nextInt(0, height).toFloat(),
-                        Random.nextInt(-2, 2),
-                        Random.nextInt(-2, 2),
-                        Random.nextInt(150, 255)
-                    )
+                        Particle(
+                                Random.nextInt(particleMinRadius, particleMaxRadius).toFloat(),
+                                Random.nextInt(0, width).toFloat(),
+                                Random.nextInt(0, height).toFloat(),
+                                Random.nextInt(-2, 2),
+                                Random.nextInt(-2, 2),
+                                Random.nextInt(150, 255)
+                        )
                 )
             }
         }
@@ -232,10 +246,12 @@ class ParticleView @JvmOverloads constructor(
             setupParticles()
 
             while (running) {
+                if (particleSpeed == ParticlesSpeed.Slow)
+                    sleep(20L)
                 try {
                     canvas = holder.lockCanvas()
 
-                    synchronized (holder) {
+                    synchronized(holder) {
                         // Clear screen every frame
                         canvas?.drawColor(particlesBackgroundColor, PorterDuff.Mode.SRC)
 
@@ -312,4 +328,14 @@ class ParticleView @JvmOverloads constructor(
             path.reset()
         }
     }
+
+
+    enum class ParticlesSpeed(val value: Int) {
+        Default(0),
+        Slow(1),
+    }
+
+    inline fun <reified T : Enum<T>> TypedArray.getEnum(index: Int, default: T) =
+            getInt(index, -1).let { if (it >= 0) enumValues<T>()[it] else default
+            }
 }
